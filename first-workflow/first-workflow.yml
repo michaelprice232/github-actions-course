@@ -1,0 +1,29 @@
+# Name of the workflow
+name: First Workflow
+
+# Triggers. workflow_dispatch means manual invocation
+on: [workflow_dispatch]
+
+# List of jobs associated with this workflow
+jobs:
+
+  first-job:
+    # Which runner to use
+    runs-on: ubuntu-24.04
+
+    steps:
+      # Multi line shell command
+      - name: Print greeting
+        run: |
+          echo "Hello world!"
+          echo "Hello again...."
+      - name: Print goodbye
+        run: echo "Done - bye!"
+
+      - name: Echo out some env vars
+        run: |
+          echo "HOSTNAME: ${HOSTNAME}"
+          echo "GITHUB_WORKSPACE: ${GITHUB_WORKSPACE}"
+          echo "HOME: ${HOME}"
+          echo "GITHUB_SHA: ${GITHUB_SHA}"
+          echo "GITHUB_REF: ${GITHUB_REF}"

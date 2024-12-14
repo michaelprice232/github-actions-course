@@ -1,0 +1,13 @@
+# Warning - outputting the full context object is not recommended in public repos, even though the tokens are masks in log output
+
+name: Context Info
+on: workflow_dispatch
+
+jobs:
+  context:
+    runs-on: ubuntu-latest
+    steps:
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/accessing-contextual-information-about-workflow-runs
+      # https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/evaluate-expressions-in-workflows-and-actions
+      - name: Output context info
+        run: echo "${{ toJSON(github) }}"
