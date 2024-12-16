@@ -43,7 +43,7 @@ All the STEPS are run in the same VM so you can use the filesystem to share info
 Jobs can run on different runners/VMs
 Within a runner the GitHub actions runner (C# based) is installed
 VMs are hosted in Azure
-VMs for Linux/MacOs use password-less sudo for when you need to elevate privileges such as installing packages
+VMs for Linux/macOS use password-less sudo for when you need to elevate privileges such as installing packages
 A list of installed packages for the VM can be viewed as a link in the "Set up job" built in step
 
 
@@ -72,3 +72,16 @@ Actions:
 Re-usable modules which can be official or community created, or private ones.
 Marketplace which lists all the public ones: https://github.com/marketplace?type=actions
 You can typically link through to the marketplace if on the GitHub source code repo for the Action (there is a displayed button at the top)
+
+When a workflow runs it runs against the target branch for whatever triggered it
+
+Workflows do not automatically run for PRs which are opened from forked repos if it's a first time contributor, even if they should.
+They require manual approval to run from a maintainer. After being approved once they are able to run subsequent workloads without approval.
+Contributors which have been assigned via the contributors list for the repo are   
+
+Workflow triggers:
+There are two ways to filter workflow triggers: "activity types" and "filters"
+"Activity types": applied against types like "pull_request" to scope it to certain event types such as "opened", "closed"
+"Filters": allow you to filter branch, tag and path names when using events like "push". Can also use negation
+
+When using wildcards "*" matches multiple characters, but not slashes. "**" also include slashes
