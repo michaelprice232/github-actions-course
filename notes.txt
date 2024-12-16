@@ -85,3 +85,12 @@ There are two ways to filter workflow triggers: "activity types" and "filters"
 "Filters": allow you to filter branch, tag and path names when using events like "push". Can also use negation
 
 When using wildcards "*" matches multiple characters, but not slashes. "**" also include slashes
+
+Workflows - by default - fail if at least one job fails
+Jobs - by default - fail if at least one-step fails
+You can override this behaviour
+You can manually cancel workflows
+
+You can force a workflow to be skipped by adding a particular commit message such as:
+"my commit msg [skip ci]"
+https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/skipping-workflow-runs
