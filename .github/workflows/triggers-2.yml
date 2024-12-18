@@ -1,0 +1,14 @@
+name: Deploy from tag
+on:
+  push:
+    # If both tags and branches is passed then the workflow will run on either (OR)
+    tags:
+      # Check for semver tags. You don't need to escape the dots like with normal regex.
+      # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#filter-pattern-cheat-sheet
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploying a release
+        run: echo "Deploying a release from tag $GITHUB_REF"

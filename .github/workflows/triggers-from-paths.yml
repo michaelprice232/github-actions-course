@@ -1,0 +1,15 @@
+name: Trigger from paths
+on:
+  push:
+    paths:
+      - "**/.jsx"
+
+  # You can use an empty event but must include the :
+  workflow_dispatch:
+
+jobs:
+  path-based:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: "Dummy step from JS file update"
+        run: echo "Dummy step"

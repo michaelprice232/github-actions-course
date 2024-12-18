@@ -1,0 +1,48 @@
+name: Using Explicit Caches
+on:
+  push:
+    branches:
+      - caches
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Add a cache in a location which npm uses by default. The cache key changes if the package lock file changes
+      - name: npm cache
+        uses: actions/cache@v4.2.0
+        with:
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+
+      # Use the Node package installed on the runner rather than the setup-node action, which can handle caching for us
+      # Allows us to demonstrate using the cache action directly
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Restore the cache. This is the same as cache but doesn't try to update it afterward (the built-in "post" step)
+      - name: npm cache
+        uses: actions/cache/restore@v4.2.0
+        with:
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.npm
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
