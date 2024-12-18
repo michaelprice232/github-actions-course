@@ -1,0 +1,42 @@
+# Environments are a GitHub construct whereby you can re-use the same environment and secret names but with different values e.g. test, staging
+# You can also apply reviewer and branch protections
+# Only available on public repos for free plan, or paying users
+# Secrets are masked when outputted
+
+name: Demo Environments
+
+on: push
+
+jobs:
+  dev:
+    runs-on: ubuntu-24.04
+
+    # Use the secrets/variables from the dev environment
+    environment: dev
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Echo secret length (to prove they are different length)
+        run: echo "DB_PASSWORD length = ${#DB_PASSWORD}"
+
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+  staging:
+    runs-on: ubuntu-24.04
+
+    # Use the secrets/variables from the staging environment
+    environment: staging
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Echo secret length (to prove they are different length)
+        run: echo "DB_PASSWORD length = ${#DB_PASSWORD}"
+
+        # Use the same key name but different values!
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}

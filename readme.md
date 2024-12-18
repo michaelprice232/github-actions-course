@@ -103,3 +103,10 @@ Caches can be used to reduce build times for config such as build dependencies w
 between multiple jobs and workflows. There are actions for `actions/cache` as well as more granular actions `actions/cache/restore`
 and `actions/cache/save` (similar to cache but omit the save and restore built-in steps respectively). An alternative is to use the higher
 level actions such as `actions/setup-node` and `actions/setup-go`, which can also handle this caching action.
+
+Config can be passed to workflows using environment variables (non-sensitive) or secrets (sensitive).
+Environment variables can be defined explicitly in the workload at the workflow, job and step level. They are auto available at the relevant scope.
+They can also be defined at the repo, environment and organisational level. Secrets can be defined in this way as well.
+Environments are a way to use the same environment and secret key names, but with different values per environment e.g. dev, test. See ./environments for an example
+Secrets are masked at output by default.
+If including secrets or variables from the repo/env/org level you need to pass them in using env: keys and contexts e.g. KEY: ${{ secrets.MY_SECRETS }}
