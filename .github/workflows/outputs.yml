@@ -1,0 +1,80 @@
+name: Passing Outputs
+on:
+  push:
+    branches:
+      - outputs
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+
+    # Outputs are simple string/number values that can be used to pass info between jobs
+    outputs:
+      script-file: ${{ steps.publish-filename.outputs.script-file }}
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      # Artifacts can be retrieved via the GUI/API or via other jobs
+      - name: Create artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-files
+          path: |
+            dist
+            package.json
+
+      # This is the recommended way to output simple strings or numbers, for consumption by other jobs
+      # Legacy methods may include ::set-output name=script-file::value syntax
+      - name: Publish JS filename
+        id: publish-filename
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist-files
+
+      - name: List artifact files
+        run: ls -lR
+
+      # The needs context contains the outputs of any direct dependent jobs
+      - name: Echo simple output from other job
+        run: echo "${{ needs.build.outputs.script-file }}"
+
+      - name: Deploy
+        run: echo "Dummy deployment..."

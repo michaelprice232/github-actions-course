@@ -1,0 +1,46 @@
+# Run multiple jobs. Only deploy if the tests have passed. Demo's chaining jobs together using "needs"
+name: Simulated Deployment
+on: workflow_dispatch # toggling off
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Node is already installed on the runner. But we may want to use a different version
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    # Only run this job if test succeeds
+    # https://docs.github.com/en/actions/writing-workflows/workflow-syntax-for-github-actions#jobsjob_idneeds
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Node is already installed on the runner. But we may want to use a different version
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Deploy
+        run: echo "Dummy deployment..."

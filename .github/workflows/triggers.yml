@@ -1,0 +1,16 @@
+# Simulate running more extended tests on a pull request against the main branch. Demo's using more granular workflow triggers
+name: Integration Tests
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize # runs when additional commits are pushed to the PR
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run extended tests
+        run: echo "Running extended tests..."
