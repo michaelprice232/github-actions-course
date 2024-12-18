@@ -95,7 +95,11 @@ You can force a workflow to be skipped by adding a particular commit message suc
 "my commit msg [skip ci]"
 https://docs.github.com/en/actions/managing-workflow-runs-and-deployments/managing-workflow-runs/skipping-workflow-runs
 
-
 To pass details between jobs you can:
 1. Use simple values (text/numbers etc.). These are defined as outputs on the job level and then steps push key/value pairs to a $GITHUB_OUTPUT envar
 2. Artifacts can be created/retrieved using upload-artifact and download-artifact actions. These are files/directories
+
+Caches can be used to reduce build times for config such as build dependencies which change infrequently. Caches can be shared
+between multiple jobs and workflows. There are actions for `actions/cache` as well as more granular actions `actions/cache/restore`
+and `actions/cache/save` (similar to cache but omit the save and restore built-in steps respectively). An alternative is to use the higher
+level actions such as `actions/setup-node` and `actions/setup-go`, which can also handle this caching action.
