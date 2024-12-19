@@ -20,10 +20,14 @@ jobs:
         run: npm ci
 
       - name: Run tests
+        id: unit-tests  # So we can reference it in the steps context
         run: npm test
 
-      # todo: Only upload tests as an artifact is they have failed
+      # Only upload tests as an artifact if they have failed
       - name: Upload test report
+        # Failure returns true if there has been a failure in a preceding step
+        # But we are not interested in failures of the prior setup steps
+        if: failure() && steps.unit-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
           name: unit-tests
