@@ -1,3 +1,4 @@
+# Demo using if conditionals and the special failure() and always() conditions
 name: Conditionals
 on:
   push:
