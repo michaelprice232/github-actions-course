@@ -1,5 +1,5 @@
 # Run multiple jobs. Only deploy if the tests have passed. Demo's chaining jobs together using "needs"
-name: Simulated Deployment
+name: Needs Demo
 on: workflow_dispatch # toggling off
 
 jobs:
