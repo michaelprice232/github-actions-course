@@ -12,12 +12,17 @@ jobs:
       - name: Get code
         uses: actions/checkout@v4
 
-      - name: Setup Node on runner
-        uses: actions/setup-node@v4
+      # setup-node action can cache for us, but using this to demo another conditional statement for installing dependencies
+      - name: Setup cache
+        id: cache
+        uses: actions/cache@v4.2.0
         with:
-          node-version: 23
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
 
+      # Install only if there was a cache miss
       - name: Install code dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
       - name: Run tests
@@ -27,7 +32,7 @@ jobs:
       # Only upload tests as an artifact if they have failed
       - name: Upload test report
         # Failure returns true if there has been a failure in a preceding step
-        # But we are not interested in failures of the prior setup steps
+        # But we are not interested in failures of the prior setup steps (checkout code etc.)
         if: failure() && steps.unit-tests.outcome == 'failure'
         uses: actions/upload-artifact@v4
         with:
