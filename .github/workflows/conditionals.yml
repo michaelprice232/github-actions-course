@@ -1,0 +1,68 @@
+# Demo using if conditionals and the special failure() and always() conditions
+name: Conditionals
+on:
+  push:
+    branches:
+      - conditionals
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: unit-tests  # So we can reference it in the steps context
+        run: npm test
+
+      # Only upload tests as an artifact if they have failed
+      - name: Upload test report
+        # Failure returns true if there has been a failure in a preceding step
+        # But we are not interested in failures of the prior setup steps
+        if: failure() && steps.unit-tests.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests
+          path: test.json
+
+  # Have an intermediary job so that we can demo the downstream jobs failing if the test job fails, and it still triggers the failure() special conditional
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Build
+        run: echo "Dummy build..."
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy
+        run: echo "Dummy deployment..."
+
+  # Add a report step which only executes when there has been a failure upstream
+  failure-report:
+    if: failure()
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run report of failure
+        run: echo "Report event - ${{ toJSON(github.event) }}"
+
+  # A report which ALWAYS runs
+  always-report:
+    if: always()
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run report of failure
+        run: echo "This report will always run"

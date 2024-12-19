@@ -110,3 +110,7 @@ They can also be defined at the repo, environment and organisational level. Secr
 Environments are a way to use the same environment and secret key names, but with different values per environment e.g. dev, test. See ./environments for an example
 Secrets are masked at output by default.
 If including secrets or variables from the repo/env/org level you need to pass them in using env: keys and contexts e.g. KEY: ${{ secrets.MY_SECRETS }}
+
+Conditional "if" directives can be used on the job or step level. 
+They can check for failure modes in the preceding steps or jobs using the special failure(), success(), always() and cancelled() functions.
+They can also evaluate the outcome of other steps based on ids such as "steps.unit-tests.outcome == 'failure'" or on certain context values
