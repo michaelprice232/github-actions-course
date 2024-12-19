@@ -51,8 +51,11 @@ jobs:
     needs: build
     runs-on: ubuntu-24.04
     steps:
+      # Even if the step fails, continue with the other steps and jobs
       - name: Continue on error
+        continue-on-error: true
         run: exit 3
+
       - name: Deploy
         run: echo "Dummy deployment..."
 
