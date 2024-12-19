@@ -49,10 +49,19 @@ jobs:
         run: echo "Dummy deployment..."
 
   # Add a report step which only executes when there has been a failure upstream
-  report:
+  failure-report:
     if: failure()
     needs: deploy
     runs-on: ubuntu-24.04
     steps:
       - name: Run report of failure
         run: echo "Report event - ${{ toJSON(github.event) }}"
+
+  # A report which ALWAYS runs
+  always-report:
+    if: always()
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run report of failure
+        run: echo "This report will always run"
