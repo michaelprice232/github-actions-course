@@ -38,19 +38,8 @@ jobs:
     needs: test
     runs-on: ubuntu-24.04
     steps:
-      - name: Get code
-        uses: actions/checkout@v4
-
-      - name: Setup Node on runner
-        uses: actions/setup-node@v4
-        with:
-          node-version: 23
-
-      - name: Install code dependencies
-        run: npm ci
-
-      - name: Build app
-        run: npm run build
+      - name: Build
+        run: echo "Dummy build..."
 
   deploy:
     needs: build
@@ -58,3 +47,11 @@ jobs:
     steps:
       - name: Deploy
         run: echo "Dummy deployment..."
+
+  # Add a report step which only executes when there has been a failure upstream
+  report:
+    needs: deploy
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Run report of failure
+        run: echo "Report event - ${{ toJSON(github.event) }}"
