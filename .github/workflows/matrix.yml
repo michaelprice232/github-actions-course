@@ -1,4 +1,4 @@
-# Demo using matrix to generate multiple jobs against combinations of input such as OS and language versions
+# Demo using a matrix to generate multiple jobs against combinations of input such as OS and language versions
 name: Matrix
 
 on:
