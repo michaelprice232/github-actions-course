@@ -115,3 +115,5 @@ Conditional "if" directives can be used on the job or step level.
 They can check for failure modes in the preceding steps or jobs using the special failure(), success(), always() and cancelled() functions.
 They can also evaluate the outcome of other steps based on ids such as "steps.unit-tests.outcome == 'failure'" or on certain context values.
 continue-on-error can be used to continue the job and workflow in case of any errors in a step. The error will be annotated in the workflow run.
+
+Matrix's can be used to run parallel jobs for different combinations of inputs such as OS and programming language versions.
