@@ -50,6 +50,7 @@ jobs:
 
   # Add a report step which only executes when there has been a failure upstream
   report:
+    if: failure()
     needs: deploy
     runs-on: ubuntu-24.04
     steps:
