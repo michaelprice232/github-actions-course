@@ -1,0 +1,56 @@
+name: Conditionals
+on:
+  push:
+    branches:
+      - conditionals
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      # todo: Only upload tests as an artifact is they have failed
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests
+          path: test.json
+
+  # Have an intermediary job so that we can demo the downstream jobs failing if the test job fails, and it still triggers the failure() special conditional
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Setup Node on runner
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Deploy
+        run: echo "Dummy deployment..."
