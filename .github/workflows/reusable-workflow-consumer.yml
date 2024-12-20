@@ -6,8 +6,13 @@ on:
       - reusable-workflow
 
 jobs:
-  caller:
+  build_cache:
     runs-on: ubuntu-latest
+
+    # Outputs are evaluated on the runner at the end of the job
+    outputs:
+      cache_primary_key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
     steps:
       - name: Get code
         uses: actions/checkout@v4
@@ -23,9 +28,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
-      # Call re-usable workflow which lists the files in the cache
-      - name: Call re-usable workflow
-        uses: ./.github/workflows/reusable-workflow.yml
-        with:
-          # cache-primary-key is available as an output with actions/cache/restore but not actions/cache
-          cache_primary_key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+  caller:
+    needs: [build_cache]
+    uses: ./.github/workflows/reusable-workflow.yml
+    with:
+      # cache-primary-key is available as an output with actions/cache/restore but not actions/cache
+      cache_primary_key: ${{ needs.build_cache.outputs.cache_primary_key }}
