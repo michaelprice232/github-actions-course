@@ -11,7 +11,9 @@ on:
 
     # Propagate the output from the job so it's accessible from the caller workflow
     outputs:
-      file_count: ${{ jobs.list-cache.outputs.file_count }}
+      file_count:
+        description: The number of files in the cache
+        value: ${{ jobs.list-cache.outputs.file_count }}
 
 jobs:
   list-cache:
