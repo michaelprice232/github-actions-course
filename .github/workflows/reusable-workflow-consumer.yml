@@ -25,7 +25,7 @@ jobs:
 
       # Call re-usable workflow which lists the files in the cache
       - name: Call re-usable workflow
-        uses: .github/workflows/reusable-workflow.yml
+        uses: ./.github/workflows/reusable-workflow.yml
         with:
           # cache-primary-key is available as an output with actions/cache/restore but not actions/cache
           cache_primary_key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
