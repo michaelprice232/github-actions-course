@@ -3,11 +3,18 @@ name: Re-usable workflow
 
 on:
   workflow_call:
+    # How to pass normal variables
     inputs:
       cache_primary_key:
         description: The primary key name used in the cache
         required: true
         type: string
+
+    # How to pass secrets
+    secrets:
+      dummy_secret_1:
+        description: Example of a secret being passed through
+        required: true
 
     # Propagate the output from the job so it's accessible from the caller workflow
     outputs:
@@ -33,6 +40,10 @@ jobs:
       - name: List files in the cache
         run: ls -lR
 
-      - name: Count the number of files
+      - name: Count the number of files as output
         id: count
         run: echo "count=$(find . -type f | wc -l | xargs)" >> "$GITHUB_OUTPUT"
+
+      - name: Use the dummy secret
+        run: echo "Secret length = ${#${{ secrets.dummy_secret_1 }}}
+

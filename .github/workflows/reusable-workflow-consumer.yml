@@ -37,10 +37,14 @@ jobs:
   caller:
     needs: [build_cache]
     uses: ./.github/workflows/reusable-workflow.yml
+
+    # Variables and secrets are passed using different keys
     with:
       cache_primary_key: ${{ needs.build_cache.outputs.cache_primary_key }}
+    secrets:
+      dummy_secret_1: ${{ secrets.DUMMY_SECRET_1 }}
 
-  # Echo the output from the caller re-usable workflow
+  # Echo the output from the called re-usable workflow
   another_job:
     needs: [caller]
     runs-on: ubuntu-latest

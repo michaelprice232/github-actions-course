@@ -117,3 +117,6 @@ They can also evaluate the outcome of other steps based on ids such as "steps.un
 continue-on-error can be used to continue the job and workflow in case of any errors in a step. The error will be annotated in the workflow run.
 
 Matrix's can be used to run parallel jobs for different combinations of inputs such as OS and programming language versions.
+
+Re-usable workflows can be used to modularise certain tasks to increase standardisation and reduce the maintenance overhead.
+Examples are in 'reusable-workflow-consumer.yml' and 'reusable-workflow.yml'
