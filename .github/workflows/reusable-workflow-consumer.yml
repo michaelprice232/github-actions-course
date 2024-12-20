@@ -46,4 +46,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Echo the file count
-        run: ${{ needs.caller.outputs.file_count }}
+        run: echo "${{ needs.caller.outputs.file_count }}"
