@@ -9,11 +9,16 @@ on:
         required: true
         type: string
 
-# Add an output for number of files in the cache
+    # Propagate the output from the job so it's accessible from the caller workflow
+    outputs:
+      file_count: ${{ jobs.list-cache.outputs.file_count }}
 
 jobs:
   list-cache:
     runs-on: ubuntu-latest
+
+    outputs:
+      file_count: ${{ steps.count.outputs.count }}
 
     steps:
       - name: npm cache
@@ -21,9 +26,11 @@ jobs:
         with:
           key: ${{ inputs.cache_primary_key }}
           path: node_modules
-          fail-on-cache-miss: 'true'
+          fail-on-cache-miss: 'true'  # We should never have a cache miss as we are refreshing it in the caller
 
-      - name: list files in the cache
+      - name: List files in the cache
         run: ls -lR
 
-    # Create output
+      - name: Count the number of files
+        id: count
+        run: echo "count=$(find . -type f | wc -l | xargs)" >> "$GITHUB_OUTPUT"

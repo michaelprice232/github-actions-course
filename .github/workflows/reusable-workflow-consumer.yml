@@ -32,8 +32,18 @@ jobs:
         id: cache-key-output
         run: echo "cache_primary_key=npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> "$GITHUB_OUTPUT"
 
+
+  # Call a re-usable workflow passing the cache primary key as an input
   caller:
     needs: [build_cache]
     uses: ./.github/workflows/reusable-workflow.yml
     with:
       cache_primary_key: ${{ needs.build_cache.outputs.cache_primary_key }}
+
+  # Echo the output from the caller re-usable workflow
+  another_job:
+    needs: [caller]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo the file count
+        run: ${{ needs.caller.outputs.file_count }}
