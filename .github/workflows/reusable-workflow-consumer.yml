@@ -1,0 +1,53 @@
+# Demo calling another (reusable) workflow
+name: Re-usable workflow consumer
+on:
+  push:
+    branches:
+      - reusable-workflow
+
+jobs:
+  build_cache:
+    runs-on: ubuntu-latest
+
+    outputs:
+      cache_primary_key: ${{ steps.cache-key-output.outputs.cache_primary_key }}
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: npm cache
+        id: cache
+        uses: actions/cache@v4.2.0
+        with:
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+
+      - name: Install code dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      # The cache key used is available as an output with actions/cache/restore but not actions/cache, so building the same key instead
+      - name: Set cache key output
+        id: cache-key-output
+        run: echo "cache_primary_key=npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> "$GITHUB_OUTPUT"
+
+
+  # Call a re-usable workflow passing the cache primary key as an input
+  caller:
+    needs: [build_cache]
+    uses: ./.github/workflows/reusable-workflow.yml
+
+    # Variables and secrets are passed using different keys
+    with:
+      cache_primary_key: ${{ needs.build_cache.outputs.cache_primary_key }}
+    secrets:
+      dummy_secret_1: ${{ secrets.DUMMY_SECRET_1 }}
+
+  # Echo the output from the called re-usable workflow
+  another_job:
+    needs: [caller]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Echo the file count
+        run: echo "${{ needs.caller.outputs.file_count }}"

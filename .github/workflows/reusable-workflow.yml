@@ -1,0 +1,51 @@
+# Demo a re-usable workflow
+name: Re-usable workflow
+
+on:
+  workflow_call:
+    # How to pass normal variables
+    inputs:
+      cache_primary_key:
+        description: The primary key name used in the cache
+        required: true
+        type: string
+
+    # How to pass secrets
+    secrets:
+      dummy_secret_1:
+        description: Example of a secret being passed through
+        required: true
+
+    # Propagate the output from the job so it's accessible from the caller workflow
+    outputs:
+      file_count:
+        description: The number of files in the cache
+        value: ${{ jobs.list-cache.outputs.file_count }}
+
+jobs:
+  list-cache:
+    runs-on: ubuntu-latest
+
+    outputs:
+      file_count: ${{ steps.count.outputs.count }}
+
+    steps:
+      - name: npm cache
+        uses: actions/cache/restore@v4.2.0
+        with:
+          key: ${{ inputs.cache_primary_key }}
+          path: node_modules
+          fail-on-cache-miss: 'true'  # We should never have a cache miss as we are refreshing it in the caller
+
+      - name: List files in the cache
+        run: ls -lR
+
+      - name: Count the number of files as output
+        id: count
+        run: echo "count=$(find . -type f | wc -l | xargs)" >> "$GITHUB_OUTPUT"
+
+      - name: Use the dummy secret
+        run: |
+          dummy_secret="${{ secrets.dummy_secret_1 }}"
+          echo "Secret length = ${#dummy_secret}"
+
