@@ -45,5 +45,5 @@ jobs:
         run: echo "count=$(find . -type f | wc -l | xargs)" >> "$GITHUB_OUTPUT"
 
       - name: Use the dummy secret
-        run: echo "Secret length = ${#${{ secrets.dummy_secret_1 }}}
+        run: echo "Secret length = ${#${{ secrets.dummy_secret_1 }}}"
 
