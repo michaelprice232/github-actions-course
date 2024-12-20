@@ -9,9 +9,8 @@ jobs:
   build_cache:
     runs-on: ubuntu-latest
 
-    # Outputs are evaluated on the runner at the end of the job
     outputs:
-      cache_primary_key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+      cache_primary_key: ${{ steps.cache-key-output.outputs.cache_primary_key }}
 
     steps:
       - name: Get code
@@ -28,9 +27,13 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
 
+      # The cache key used is available as an output with actions/cache/restore but not actions/cache, so building the same key instead
+      - name: Set cache key output
+        id: cache-key-output
+        run: echo "cache_primary_key=npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}" >> "$GITHUB_OUTPUT"
+
   caller:
     needs: [build_cache]
     uses: ./.github/workflows/reusable-workflow.yml
     with:
-      # cache-primary-key is available as an output with actions/cache/restore but not actions/cache
       cache_primary_key: ${{ needs.build_cache.outputs.cache_primary_key }}
