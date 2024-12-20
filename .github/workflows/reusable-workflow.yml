@@ -1,0 +1,30 @@
+# Demo a re-usable workflow
+name: Re-usable workflow
+
+on:
+  workflow_call:
+    inputs:
+      cache_primary_key:
+        description: The primary key name used in the cache
+        required: true
+        type: string
+
+# Add an output for number of files in the cache
+
+jobs:
+  list-cache:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: npm cache
+        id: cache
+        uses: actions/cache/restore@v4.2.0
+        with:
+          key: ${{ inputs.cache_primary_key }}
+          path: node_modules
+          fail-on-cache-miss: 'true'
+
+      - name: list files in the cache
+        run: ls -lR
+
+    # Create output
