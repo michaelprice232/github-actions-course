@@ -1,0 +1,84 @@
+name: Running Docker Containers
+
+on:
+  push:
+    branches:
+      - containers
+
+jobs:
+  connect-to-db-from-worker:
+    runs-on: ubuntu-latest
+
+    env:
+      DB_HOSTNAME: localhost  # Use the locally exposed host port as we are running on the runner itself
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+
+    # Add a service container to run the Postgres database
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          # Default username is 'postgres'
+          POSTGRES_PASSWORD: password
+        # As the main container is running directly on the worker (not another container) we must expose the ports to the host
+        ports:
+          - 5432:5432
+        # Set Docker health checks to wait until postgres has started to avoid race conditions
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Get the go version from the mod file. Cache by default
+      - name: setup-go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      # Run a single test for the DB connection test
+      - name: Unit tests
+        run: go test -run ^Test_connectToDB$
+
+
+  # Connect from another container this time
+  connect-to-db-from-container:
+    runs-on: ubuntu-latest
+
+    # Run all the job steps in this container
+    # You can also pass additional Docker related keys such as env, ports, options if required
+    container: golang:1.23
+
+    env:
+      DB_HOSTNAME: postgres # use the label when in a container context as using the Docker bridge network
+      DB_USERNAME: postgres
+      DB_PASSWORD: password
+
+    # No need to expose the ports this time
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: setup-go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Unit tests
+        run: go test -run ^Test_connectToDB$
