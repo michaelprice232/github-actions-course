@@ -136,3 +136,5 @@ Actions can be written in 3 ways:
 1. Javascript (NodeJS) - use raw JS to write the action
 2. Docker - build an image using any programming language which will then be used by GitHub
 3. Composite - combines steps ("run" and "uses") to consolidate existing workflows. No programming required.
+
+Examples of (2) and (3) are in this repo. An example of (1) of using Node.js can be seen in the Udemy course.

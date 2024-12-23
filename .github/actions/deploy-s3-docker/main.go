@@ -51,6 +51,4 @@ func main() {
 	if err != nil {
 		log.Fatalf("problem uploading files %s", err)
 	}
-
-	// todo: add output for website URL
 }
