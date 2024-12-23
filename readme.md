@@ -120,3 +120,9 @@ Matrix's can be used to run parallel jobs for different combinations of inputs s
 
 Re-usable workflows can be used to modularise certain tasks to increase standardisation and reduce the maintenance overhead.
 Examples are in 'reusable-workflow-consumer.yml' and 'reusable-workflow.yml'
+
+Containers can be used to run entire jobs or individual steps. This allows us to tightly manage the execution environment.
+The container still runs on the runner via the Docker socket.
+Service containers are ones which run utility services such as Postgres or Redis.
+Processes in jobs can communicate with them via the named labels if they are also in containers, as they use the Docker bridge network.
+If the job steps are running directly on the runner then you need to expose the service ports to the host and then reference them via localhost.
