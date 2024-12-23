@@ -14,7 +14,7 @@ jobs:
       - name: install dependencies
         uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
         with:
-          cache: 'false'
+          cache: 'false'  # override default input value
 
       - name: Run tests
         run: npm test
@@ -37,4 +37,6 @@ jobs:
 
       # Demo reading an output from the custom action
       - name: Read output from action
-        run: echo "Cache action - ${{ steps.install-deps-result.outputs.install-deps-result }}"
+        run: echo "Cache action - $RESULT"
+        env:
+          RESULT: ${{ steps.install-deps-result.outputs.install-deps-result }}"
