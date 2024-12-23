@@ -37,7 +37,4 @@ jobs:
 
       # Demo reading an output from the custom action
       - name: Read output from action
-        run: echo Cache action - "$RESULT"
-        shell: bash
-        env:
-          RESULT: ${{ steps.install-deps-result.outputs.install-deps-result }}"
+        run: echo Cache action - "${{ steps.install-deps-result.outputs.did_cache_run }}"
