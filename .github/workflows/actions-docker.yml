@@ -1,0 +1,26 @@
+# Demo using a custom GitHub Action written using Docker
+name: Custom Docker GitHub Action
+on:
+  push:
+    branches:
+      - actions-docker
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Deploy
+        uses: ./.github/actions/deploy-s3-docker
+        with:
+          bucket: 'mike-gh-actions-test'
+          region: 'eu-west-2'
+          source: 'dist'  # Where the build step writes the files to
