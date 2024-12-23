@@ -29,7 +29,12 @@ jobs:
 
       # Use the default input value
       - name: install dependencies
+        id: install-deps-result
         uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
 
       - name: Build app
         run: npm run build
+
+      # Demo reading an output from the custom action
+      - name: Read output from action
+        run: echo "Cache action - ${{ steps.install-deps-result.outputs.install-deps-result }}"
