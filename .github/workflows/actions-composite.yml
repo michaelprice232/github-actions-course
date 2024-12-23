@@ -1,0 +1,44 @@
+name: Custom Composite GitHub Actions
+on:
+  push:
+    branches:
+      - actions-composite
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: npm cache
+        uses: actions/cache@v4.2.0
+        with:
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: npm cache
+        uses: actions/cache@v4.2.0
+        with:
+          key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: node_modules
+
+      - name: Install code dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
