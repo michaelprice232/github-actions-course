@@ -1,0 +1,17 @@
+name: 'Upload to S3'
+description: 'Upload files in a source directory to an S3 bucket for website hosting'
+
+inputs:
+  bucket:
+    description: 'S3 bucket to target'
+    required: true
+  region:
+    description: 'What AWS region the bucket is in'
+    required: true
+  source:
+    description: 'Directory which contains the source files we want to upload to the S3 bucket'
+    required: true
+
+runs:
+  using: docker
+  image: 'Dockerfile' # builds the local Dockerfile instead of pulling from a registry
