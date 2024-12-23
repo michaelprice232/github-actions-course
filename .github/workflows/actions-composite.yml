@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: install dependencies
-        uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
+        uses: ./.github/actions/cached-deps # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
         with:
           cache: 'false'  # override default input value
 
@@ -30,7 +30,7 @@ jobs:
       # Use the default input value
       - name: install dependencies
         id: install-deps-result
-        uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
+        uses: ./.github/actions/cached-deps # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
 
       - name: Build app
         run: npm run build
