@@ -1,0 +1,18 @@
+name: 'Install & Cache (npm) Dependencies'
+description: 'Install and optionally caches npm based dependencies'
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: npm cache
+      id: cache
+      uses: actions/cache@v4.2.0
+      with:
+        key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        path: node_modules
+
+    - name: Install code dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: npm ci
+      shell: bash # this key must be added within actions
