@@ -1,0 +1,40 @@
+name: Custom Composite GitHub Actions
+on:
+  push:
+    branches:
+      - actions-composite
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      - name: install dependencies
+        uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
+        with:
+          cache: 'false'  # override default input value
+
+      - name: Run tests
+        run: npm test
+
+  build:
+    needs: test
+    runs-on: ubuntu-24.04
+
+    steps:
+      - name: Get code
+        uses: actions/checkout@v4
+
+      # Use the default input value
+      - name: install dependencies
+        id: install-deps-result
+        uses: ./.github/actions # relative from the project root and NOT the workflow file. 'actions.yml' is implicit
+
+      - name: Build app
+        run: npm run build
+
+      # Demo reading an output from the custom action
+      - name: Read output from action
+        run: echo Cache action - "${{ steps.install-deps-result.outputs.did_cache_run }}"

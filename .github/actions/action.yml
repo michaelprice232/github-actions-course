@@ -1,0 +1,36 @@
+name: 'Install & Cache (npm) Dependencies'
+description: 'Install and optionally caches npm based dependencies'
+
+inputs:
+  cache:
+    description: 'Whether to cache or not'
+    required: true
+    default: 'true'
+
+# Not very useful but demoing an output
+outputs:
+  did_cache_run:
+    description: 'Did the cache run?'
+    value: ${{ steps.cache-result.outputs.cache-run }}
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: npm cache
+      id: cache
+      if: inputs.cache == 'true'
+      uses: actions/cache@v4.2.0
+      with:
+        key: npm-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+        path: node_modules
+
+    - name: Install code dependencies
+      if: steps.cache.outputs.cache-hit != 'true' || inputs.cache != 'true'
+      run: npm ci
+      shell: bash # this key must be added within actions
+
+    - name: Cache output
+      id: cache-result
+      run: echo "cache-run=${{ inputs.cache }}" >> $GITHUB_OUTPUT
+      shell: bash

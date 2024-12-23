@@ -126,3 +126,13 @@ The container still runs on the runner via the Docker socket.
 Service containers are ones which run utility services such as Postgres or Redis.
 Processes in jobs can communicate with them via the named labels if they are also in containers, as they use the Docker bridge network.
 If the job steps are running directly on the runner then you need to expose the service ports to the host and then reference them via localhost.
+
+Actions can be used to automate steps. There are publicly available ones (both official and community) and you can also define your own.
+You typically want to define your own when you either want to condense a number of existing steps/simplify a workflow. Or there is no existing
+third party action available.
+
+Actions can be written in 3 ways:
+
+1. Javascript (NodeJS) - use raw JS to write the action
+2. Docker - build an image using any programming language which will then be used by GitHub
+3. Composite - combines steps ("run" and "uses") to consolidate existing workflows. No programming required.
