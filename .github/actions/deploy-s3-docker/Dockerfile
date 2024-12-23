@@ -1,5 +1,5 @@
-# Ideally this should use a multi-stage build from scatch and the image uploaded to a Doceker registry, but including here for easier reference
-FROM golang:1.23
+# Ideally this image should be uploaded to a Docker registry, but building in-place for easier reference
+FROM golang:1.23 AS builder
 
 WORKDIR /usr/src/app
 
@@ -8,6 +8,12 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go build -v -o /usr/local/bin/app main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /usr/local/bin/app main.go
 
-ENTRYPOINT ["app"]
+FROM alpine:3
+
+RUN apk add --no-cache ca-certificates
+
+COPY --from=builder /usr/local/bin/app /app
+
+ENTRYPOINT ["/app"]

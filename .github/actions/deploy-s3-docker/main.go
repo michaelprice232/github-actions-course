@@ -15,6 +15,8 @@ import (
 )
 
 func main() {
+	// These are passed through by GitHub based on the inputs
+	// Prefix is always INPUT_ and then it's the input name in uppercase
 	bucket := os.Getenv("INPUT_BUCKET")
 	region := os.Getenv("INPUT_REGION")
 	sourceFiles := os.Getenv("INPUT_SOURCE")
