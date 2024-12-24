@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"mime"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,16 +38,25 @@ func main() {
 		if !d.IsDir() {
 			s3Prefix := strings.TrimPrefix(path, fmt.Sprintf("%s/", sourceFiles))
 
+			// Read the source file contents
 			body, err := os.ReadFile(path)
 			if err != nil {
 				log.Fatalf("problem reading contents of file %s: %v", path, err)
 			}
 			reader := bytes.NewReader(body)
 
+			// Calculate the MIME Content-type based on the extension
+			ext := filepath.Ext(path)
+			contentType := mime.TypeByExtension(ext)
+			if contentType == "" {
+				contentType = "application/octet-stream"
+			}
+
 			_, err = svc.PutObject(context.Background(), &s3.PutObjectInput{
-				Bucket: aws.String(bucket),
-				Key:    aws.String(s3Prefix),
-				Body:   reader,
+				Bucket:      aws.String(bucket),
+				Key:         aws.String(s3Prefix),
+				Body:        reader,
+				ContentType: aws.String(contentType),
 			})
 			if err != nil {
 				log.Fatalf("problem uploading file %s: %v", path, err)
