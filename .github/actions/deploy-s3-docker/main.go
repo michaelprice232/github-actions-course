@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/fs"
@@ -25,7 +26,7 @@ func main() {
 		log.Fatalf("expected INPUT_BUCKET, INPUT_REGION & INPUT_SOURCE to be set as env vars")
 	}
 
-	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	cfg, err := config.LoadDefaultConfig(context.Background(), config.WithRegion(region))
 	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
 	}
@@ -34,15 +35,21 @@ func main() {
 	// Upload each file to S3 after trimming the root directory from the prefix
 	err = filepath.WalkDir(sourceFiles, func(path string, d fs.DirEntry, err error) error {
 		if !d.IsDir() {
-			childFile := strings.TrimPrefix(path, fmt.Sprintf("%s/", sourceFiles))
+			s3Prefix := strings.TrimPrefix(path, fmt.Sprintf("%s/", sourceFiles))
+
+			body, err := os.ReadFile(path)
+			if err != nil {
+				log.Fatalf("problem reading contents of file %s: %v", path, err)
+			}
+			reader := bytes.NewReader(body)
 
 			_, err = svc.PutObject(context.Background(), &s3.PutObjectInput{
 				Bucket: aws.String(bucket),
-				Key:    aws.String(childFile),
+				Key:    aws.String(s3Prefix),
+				Body:   reader,
 			})
-
 			if err != nil {
-				log.Fatalf("problem uploading file %s: %v", childFile, err)
+				log.Fatalf("problem uploading file %s: %v", path, err)
 			}
 		}
 
