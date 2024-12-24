@@ -68,4 +68,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("problem uploading files %s", err)
 	}
+
+	// Add a GitHub Action output for the website URL
+	url := fmt.Sprintf("url=http://%s.s3-website.%s.amazonaws.com", bucket, region)
+	err = os.Setenv("GITHUB_OUTPUT", url)
+	if err != nil {
+		log.Fatalf("problem updating GITHUB_OUTPUT env var: %v", err)
+	}
 }

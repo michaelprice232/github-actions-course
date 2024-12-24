@@ -12,6 +12,10 @@ inputs:
     description: 'Directory which contains the source files we want to upload to the S3 bucket'
     required: true
 
+outputs:
+  url:
+    description: 'URL of the static hosted website on S3'
+
 runs:
   using: docker
   image: 'Dockerfile' # builds the local Dockerfile instead of pulling from a registry
