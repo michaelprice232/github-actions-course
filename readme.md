@@ -138,3 +138,22 @@ Actions can be written in 3 ways:
 3. Composite - combines steps ("run" and "uses") to consolidate existing workflows. No programming required.
 
 Examples of (2) and (3) are in this repo. An example of (1) of using Node.js can be seen in the Udemy course.
+
+Script injections can occur when accepting user input variables but then evaluating them in a shell.
+Additional commands can be added after a semicolon which can be evaluated and perform nefarious tasks such as extracting secrets.
+The suggested ways to contract this is to either use an action or read the inputs as environment variables which are then passed into the shell. They are trested as strings at this point.
+
+Community Actions can also be malicious. There are "Verified Creator" badges assigned to trusted sources - these can be GitHub teams and also community devs.
+Suggested to review the source code if using less trusted sources.
+Highest level of security is to write all your own Actions, although this is alot of work.
+Actions should always be pinned. For highest security use SHAs rather than tags.
+
+GITHUB_TOKEN is a short-lived auth token and is generated automatically by the workflow and can be used to interact with the GH API.
+It can be accessed in steps by using: ${{ secrets.GITHUB_TOKEN }}
+If using the aws-actions/configure-aws-credentials to get an OIDC token, you must allow the GITHUB_TOKEN write access to the id token:
+
+permissions:
+    id-token: write # This is required for requesting the JWT
+    contents: read  # This is required for actions/checkout
+
+See link for further details: https://docs.github.com/en/actions/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services
