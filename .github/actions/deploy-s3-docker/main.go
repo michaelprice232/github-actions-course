@@ -70,9 +70,21 @@ func main() {
 	}
 
 	// Add a GitHub Action output for the website URL
+	// GitHub Actions requires us to write to a file which is determined by the GITHUB_OUTPUT env var
 	url := fmt.Sprintf("url=http://%s.s3-website.%s.amazonaws.com", bucket, region)
-	err = os.Setenv("GITHUB_OUTPUT", url)
+	outputfile := os.Getenv("GITHUB_OUTPUT")
+	if outputfile == "" {
+		log.Fatalf("GITHUB_OUTPUT env var is not set. It should be set automatically by GitHub Actions")
+	}
+	f, err := os.OpenFile(outputfile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		log.Fatalf("problem updating GITHUB_OUTPUT env var: %v", err)
+		log.Fatalf("problem opening the file %s for output writing: %v", outputfile, err)
+	}
+	_, err = f.WriteString(url)
+	if err != nil {
+		log.Fatalf("problem appending output to file %s: %v", outputfile, err)
+	}
+	if err = f.Close(); err != nil {
+		log.Fatalf("problem closing file %s: %v", outputfile, err)
 	}
 }
